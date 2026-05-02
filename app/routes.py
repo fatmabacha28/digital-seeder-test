@@ -49,15 +49,20 @@ def index():
                 result_action = process_action(category, filepath, cleaned_text, current_app)
 
                 # Gestion des retours d'actions (par exemple, téléchargement d'un fichier .ics)
+                action_text = result_action
+                download_url = None
                 if isinstance(result_action, dict) and result_action.get('type') == 'download':
-                    return send_file(
-                        result_action['filepath'],
-                        as_attachment=True,
-                        download_name=result_action['filename']
-                    )
+                    action_text = result_action.get('message', 'Fichier généré prêt au téléchargement.')
+                    download_url = url_for('main.download_file', filename=result_action.get('filename'))
 
-                flash(f"Document analysé avec succès. Catégorie : {category}. Action : {result_action}", "success")
-                return render_template('index.html', result={'category': category, 'text_preview': raw_text[:500] + '...', 'action': result_action})
+                flash(f"Document analysé avec succès. Catégorie : {category}.", "success")
+                return render_template('index.html', result={
+                    'filename': filename,
+                    'category': category, 
+                    'text_preview': raw_text[:500] + '...', 
+                    'action': action_text,
+                    'download_url': download_url
+                })
                 
             except Exception as e:
                 flash(f"Une erreur est survenue lors du traitement: {str(e)}", "error")
@@ -67,3 +72,16 @@ def index():
             return redirect(request.url)
 
     return render_template('index.html')
+
+@bp.route('/tech-history')
+def tech_history():
+    from app.database import get_tech_logs
+    logs = get_tech_logs(current_app)
+    return render_template('tech_history.html', logs=logs)
+
+@bp.route('/download/<filename>')
+def download_file(filename):
+    return send_file(
+        os.path.join(current_app.config['GENERATED_FOLDER'], filename),
+        as_attachment=True
+    )

@@ -6,6 +6,8 @@ load_dotenv()
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'une-cle-secrete-tres-securisee'
     UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data', 'uploads')
+    GENERATED_FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data', 'generated')
+    DATABASE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data', 'app.db')
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024 # Limite à 16 MB
 
     # Configuration Email (MailHog)
@@ -24,4 +26,6 @@ class Config:
     @staticmethod
     def init_app(app):
         os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
+        os.makedirs(Config.GENERATED_FOLDER, exist_ok=True)
+        os.makedirs(os.path.dirname(Config.DATABASE_PATH), exist_ok=True)
         os.makedirs(os.path.dirname(Config.MODEL_PATH), exist_ok=True)

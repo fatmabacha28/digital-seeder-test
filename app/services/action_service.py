@@ -15,6 +15,12 @@ def process_action(category, filepath, extracted_text, app):
         return send_email_via_mailhog(filepath, extracted_text, app)
     elif category == "ENTERTAINMENT":
         return generate_ics(filepath, app)
+    elif category == "SPORTS":
+        return generate_sports_report(filepath, extracted_text, app)
+    elif category == "TECH":
+        return log_tech_document(filepath, extracted_text, app)
+    elif category == "POLITICS":
+        return generate_politics_summary(filepath, extracted_text, app)
     else:
         return "Aucune action métier spécifique n'a été déclenchée pour cette catégorie."
 
@@ -60,19 +66,69 @@ def generate_ics(filepath, app):
     
     cal.add_component(event)
     
-    ics_filename = f"event_{datetime.datetime.now().strftime('%Y%md%H%M%S')}.ics"
-    ics_filepath = os.path.join(app.config['UPLOAD_FOLDER'], ics_filename)
+    ics_filename = f"event_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.ics"
+    ics_filepath = os.path.join(app.config['GENERATED_FOLDER'], ics_filename)
     
     try:
         with open(ics_filepath, 'wb') as f:
             f.write(cal.to_ical())
-        # Retourne un dictionnaire pour indiquer à Flask de déclencher un téléchargement
+        # Retourne un dictionnaire avec l'info du fichier
         return {
             'type': 'download',
-            'filepath': ics_filepath,
             'filename': ics_filename,
             'message': 'Fichier d\'événement généré avec succès.'
         }
     except Exception as e:
         print(f"Erreur de génération .ics : {e}")
         return f"Erreur lors de la création de l'événement agenda : {e}"
+
+def generate_sports_report(filepath, extracted_text, app):
+    """Génère un rapport texte pour les documents SPORTS."""
+    report_filename = f"sports_report_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.txt"
+    report_filepath = os.path.join(app.config['GENERATED_FOLDER'], report_filename)
+    
+    current_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    content = f"Sports document detected\n"
+    content += f"Prediction category: SPORTS\n"
+    content += f"Processing date: {current_date}\n"
+    content += f"Summary:\n{extracted_text[:500]}\n"
+    
+    try:
+        with open(report_filepath, 'w', encoding='utf-8') as f:
+            f.write(content)
+        return f"Rapport sportif généré avec succès : {report_filename}"
+    except Exception as e:
+        print(f"Erreur de génération du rapport sportif : {e}")
+        return f"Erreur lors de la création du rapport sportif : {e}"
+
+def log_tech_document(filepath, extracted_text, app):
+    """Sauvegarde un log dans SQLite pour les documents TECH."""
+    from app.database import insert_tech_log
+    filename = os.path.basename(filepath)
+    text_length = len(extracted_text)
+    
+    try:
+        insert_tech_log(filename, "TECH", text_length, app)
+        return "Document Tech loggé avec succès dans la base de données."
+    except Exception as e:
+        print(f"Erreur de logging TECH : {e}")
+        return f"Erreur lors de l'enregistrement dans la base de données : {e}"
+
+def generate_politics_summary(filepath, extracted_text, app):
+    """Génère un résumé texte pour les documents POLITICS."""
+    report_filename = f"politics_summary_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.txt"
+    report_filepath = os.path.join(app.config['GENERATED_FOLDER'], report_filename)
+    
+    current_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    content = f"--- POLITICS DOCUMENT SUMMARY ---\n"
+    content += f"Processed on: {current_date}\n"
+    content += f"Original File: {os.path.basename(filepath)}\n\n"
+    content += f"Excerpt:\n{extracted_text[:800]}\n"
+    
+    try:
+        with open(report_filepath, 'w', encoding='utf-8') as f:
+            f.write(content)
+        return f"Résumé politique généré avec succès : {report_filename}"
+    except Exception as e:
+        print(f"Erreur de génération du résumé politique : {e}")
+        return f"Erreur lors de la création du résumé : {e}"

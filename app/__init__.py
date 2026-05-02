@@ -7,6 +7,9 @@ def create_app(config_class=Config):
 
     # Initialisation spécifique
     config_class.init_app(app)
+    
+    from app.database import init_db
+    init_db(app)
 
     # Enregistrement des routes
     from app import routes

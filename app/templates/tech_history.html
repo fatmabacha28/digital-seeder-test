@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech History - Document Classification AI</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container" style="max-width: 900px;">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-icon" style="font-size: 2rem;">
+                <i class="fa-solid fa-database"></i>
+            </div>
+            <h1>Tech Documents History</h1>
+            <p>View previously logged TECH classification results</p>
+        </header>
+
+        <main class="app-main">
+            <div class="header-with-back">
+                <a href="{{ url_for('main.index') }}" class="btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back to Analyzer</a>
+            </div>
+
+            <section class="table-container fade-in">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Filename</th>
+                            <th>Category</th>
+                            <th>Text Length</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td>#{{ log.id }}</td>
+                            <td>{{ log.date }}</td>
+                            <td class="filename-text">{{ log.filename }}</td>
+                            <td>
+                                <span class="category-badge badge-{{ log.category|lower }}">
+                                    <i class="fa-solid fa-tag"></i> {{ log.category }}
+                                </span>
+                            </td>
+                            <td>{{ log.extracted_text_length }} chars</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <i class="fa-solid fa-folder-open" style="font-size: 2.5rem; color: #CBD5E1; margin-bottom: 1rem;"></i>
+                                    <h3>No TECH logs found</h3>
+                                    <p>Upload a document that classifies as TECH to see it here.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Built for Digital Seeder Technical Challenge</p>
+        </footer>
+    </div>
+</body>
+</html>
