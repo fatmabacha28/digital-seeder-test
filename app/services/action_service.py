@@ -21,6 +21,10 @@ def process_action(category, filepath, extracted_text, app):
         return log_tech_document(filepath, extracted_text, app)
     elif category == "POLITICS":
         return generate_politics_summary(filepath, extracted_text, app)
+    elif category == "HEALTH":
+        return generate_health_report(filepath, extracted_text, app)
+    elif category == "OTHER":
+        return "Catégorie non spécifique (OTHER). Aucune action déclenchée."
     else:
         return "Aucune action métier spécifique n'a été déclenchée pour cette catégorie."
 
@@ -137,3 +141,17 @@ def generate_politics_summary(filepath, extracted_text, app):
     except Exception as e:
         print(f"Erreur de génération du résumé politique : {e}")
         return f"Erreur lors de la création du résumé : {e}"
+
+def generate_health_report(filepath, extracted_text, app):
+    """Génère un dossier santé factice pour les documents HEALTH."""
+    report_filename = f"health_report_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.txt"
+    report_filepath = os.path.join(app.config['GENERATED_FOLDER'], report_filename)
+    
+    content = f"=== HEALTH DOCUMENT LOG ===\nDate: {datetime.datetime.now()}\nFile: {os.path.basename(filepath)}\nExtract:\n{extracted_text[:600]}\n"
+    try:
+        with open(report_filepath, 'w', encoding='utf-8') as f:
+            f.write(content)
+        return f"Dossier santé généré : {report_filename}"
+    except Exception as e:
+        print(f"Erreur de génération dossier santé : {e}")
+        return f"Erreur lors de la création du dossier santé : {e}"

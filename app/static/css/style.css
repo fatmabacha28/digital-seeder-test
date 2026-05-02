@@ -21,6 +21,8 @@
     --badge-tech-text: #155E75;
     --badge-politics-bg: #FFE4E6;
     --badge-politics-text: #9F1239;
+    --badge-health-bg: #FEF3C7;
+    --badge-health-text: #92400E;
     --badge-other-bg: #F1F5F9;
     --badge-other-text: #334155;
 
@@ -275,6 +277,7 @@ body {
 .badge-sports { background-color: var(--badge-sports-bg); color: var(--badge-sports-text); }
 .badge-tech { background-color: var(--badge-tech-bg); color: var(--badge-tech-text); }
 .badge-politics { background-color: var(--badge-politics-bg); color: var(--badge-politics-text); }
+.badge-health { background-color: var(--badge-health-bg); color: var(--badge-health-text); }
 .badge-other { background-color: var(--badge-other-bg); color: var(--badge-other-text); }
 
 .result-body {

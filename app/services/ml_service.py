@@ -55,8 +55,20 @@ def predict_category(cleaned_text):
     # Vectorisation du texte
     X_new = vectorizer.transform([processed_text])
     
-    # Prédiction
-    prediction_encoded = model.predict(X_new)
-    prediction_label = le.inverse_transform(prediction_encoded)
+    # Prédiction avec probabilité
+    try:
+        import numpy as np
+        probas = model.predict_proba(X_new)
+        max_proba = np.max(probas, axis=1)[0]
+        raw_pred = np.argmax(probas, axis=1)
+        
+        if max_proba < 0.55:
+            prediction_label = "OTHER"
+        else:
+            prediction_label = le.inverse_transform(raw_pred)[0]
+    except AttributeError:
+        # Fallback
+        prediction_encoded = model.predict(X_new)
+        prediction_label = le.inverse_transform(prediction_encoded)[0]
     
-    return prediction_label[0]
+    return prediction_label
