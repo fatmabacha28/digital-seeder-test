@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./app:/app/app
+      - ./models:/app/models
+      - ./data:/app/data
+    environment:
+      - FLASK_APP=app.run
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - MAIL_SERVER=mailhog
+      - MAIL_PORT=1025
+    depends_on:
+      - mailhog
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "8025:8025" # Interface web
+      - "1025:1025" # Serveur SMTP

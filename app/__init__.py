@@ -1,0 +1,15 @@
+from flask import Flask
+from app.config import Config
+
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(config_class)
+
+    # Initialisation spécifique
+    config_class.init_app(app)
+
+    # Enregistrement des routes
+    from app import routes
+    app.register_blueprint(routes.bp)
+
+    return app

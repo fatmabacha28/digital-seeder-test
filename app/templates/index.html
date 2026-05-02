@@ -1,0 +1,75 @@
+<!DOCTYPE None>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classification de Documents PDF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>IA Classifier</h1>
+            <p>Uploadez votre PDF et laissez l'IA déterminer sa catégorie.</p>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flashes">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="upload-section">
+            <form action="{{ url_for('main.index') }}" method="POST" enctype="multipart/form-data" class="upload-form">
+                <div class="file-input-wrapper">
+                    <label for="file" class="file-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <span id="file-name">Choisir un fichier PDF...</span>
+                    </label>
+                    <input type="file" id="file" name="file" accept=".pdf" required>
+                </div>
+                <button type="submit" class="btn-submit">Analyser le document</button>
+            </form>
+        </div>
+
+        {% if result %}
+        <div class="result-section">
+            <h2>Résultat de l'analyse</h2>
+            
+            <div class="result-card">
+                <div class="category-badge {{ result.category|lower }}">
+                    {{ result.category }}
+                </div>
+                
+                <div class="action-info">
+                    <strong>Action déclenchée :</strong>
+                    <p>{{ result.action if result.action is string else result.action.message }}</p>
+                </div>
+
+                <div class="text-preview">
+                    <strong>Aperçu du texte extrait :</strong>
+                    <p>{{ result.text_preview }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Afficher le nom du fichier sélectionné
+        document.getElementById('file').addEventListener('change', function(e) {
+            var fileName = e.target.files[0] ? e.target.files[0].name : 'Choisir un fichier PDF...';
+            document.getElementById('file-name').textContent = fileName;
+        });
+    </script>
+</body>
+</html>
