@@ -1,75 +1,187 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tech History - Document Classification AI</title>
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Tech History — Digital Seeder AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="app-container" style="max-width: 900px;">
-        <!-- Header -->
-        <header class="app-header">
-            <div class="logo-icon" style="font-size: 2rem;">
-                <i class="fa-solid fa-database"></i>
+
+<div class="bg-blobs" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+</div>
+
+<div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-mark">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                    <rect width="28" height="28" rx="8" fill="url(#gs)"/>
+                    <path d="M7 14L12 19L21 9" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs>
+                        <linearGradient id="gs" x1="0" y1="0" x2="28" y2="28">
+                            <stop offset="0%" stop-color="#6366F1"/><stop offset="100%" stop-color="#8B5CF6"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span>Digital Seeder</span>
             </div>
-            <h1>Tech Documents History</h1>
-            <p>View previously logged TECH classification results</p>
+            <button class="sidebar-close" id="sidebar-close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('main.index') }}" class="nav-item">
+                <i class="fa-solid fa-brain"></i><span>Classify</span>
+            </a>
+            <a href="{{ url_for('main.tech_history') }}" class="nav-item active">
+                <i class="fa-solid fa-clock-rotate-left"></i><span>Tech History</span>
+            </a>
+        </nav>
+        <div class="sidebar-stats">
+            <p class="stats-title">Categories</p>
+            <ul class="stats-list">
+                <li><span class="stat-dot dot-business"></span>Business</li>
+                <li><span class="stat-dot dot-entertainment"></span>Entertainment</li>
+                <li><span class="stat-dot dot-sports"></span>Sports</li>
+                <li><span class="stat-dot dot-tech"></span>Tech</li>
+                <li><span class="stat-dot dot-politics"></span>Politics</li>
+                <li><span class="stat-dot dot-health"></span>Health</li>
+                <li><span class="stat-dot dot-other"></span>Other</li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <button class="dark-mode-toggle" id="dark-mode-toggle">
+                <i class="fa-solid fa-moon" id="dark-icon"></i>
+                <span id="dark-label">Dark Mode</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <button class="menu-btn" id="menu-btn"><i class="fa-solid fa-bars"></i></button>
+            <div class="topbar-brand">
+                <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+                    <rect width="28" height="28" rx="8" fill="url(#gt)"/>
+                    <path d="M7 14L12 19L21 9" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs>
+                        <linearGradient id="gt" x1="0" y1="0" x2="28" y2="28">
+                            <stop offset="0%" stop-color="#6366F1"/><stop offset="100%" stop-color="#8B5CF6"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="topbar-title">Digital Seeder <span class="tag-ai">AI</span></span>
+            </div>
+            <button class="dark-mode-toggle-sm" id="dark-mode-toggle-sm">
+                <i class="fa-solid fa-moon" id="dark-icon-sm"></i>
+            </button>
         </header>
 
-        <main class="app-main">
-            <div class="header-with-back">
-                <a href="{{ url_for('main.index') }}" class="btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back to Analyzer</a>
+        <!-- Page Header -->
+        <div class="header-with-back">
+            <div>
+                <h2 style="font-size:1.5rem;font-weight:700;letter-spacing:-0.02em;">
+                    <i class="fa-solid fa-laptop-code" style="color:var(--c-tech);margin-right:0.5rem;"></i>
+                    Tech History
+                </h2>
+                <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.25rem;">
+                    All TECH documents logged in the database
+                </p>
             </div>
+            <a href="{{ url_for('main.index') }}" class="btn-ghost">
+                <i class="fa-solid fa-arrow-left"></i> Back
+            </a>
+        </div>
 
-            <section class="table-container fade-in">
-                <table class="history-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Date</th>
-                            <th>Filename</th>
-                            <th>Category</th>
-                            <th>Text Length</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for log in logs %}
-                        <tr>
-                            <td>#{{ log.id }}</td>
-                            <td>{{ log.date }}</td>
-                            <td class="filename-text">{{ log.filename }}</td>
-                            <td>
-                                <span class="category-badge badge-{{ log.category|lower }}">
-                                    <i class="fa-solid fa-tag"></i> {{ log.category }}
-                                </span>
-                            </td>
-                            <td>{{ log.extracted_text_length }} chars</td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="5">
-                                <div class="empty-state">
-                                    <i class="fa-solid fa-folder-open" style="font-size: 2.5rem; color: #CBD5E1; margin-bottom: 1rem;"></i>
-                                    <h3>No TECH logs found</h3>
-                                    <p>Upload a document that classifies as TECH to see it here.</p>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </section>
-        </main>
+        <!-- Table -->
+        <section class="table-container fade-slide-up">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th><i class="fa-solid fa-calendar-days"></i> Date</th>
+                        <th><i class="fa-solid fa-file-pdf"></i> Filename</th>
+                        <th><i class="fa-solid fa-tag"></i> Category</th>
+                        <th><i class="fa-solid fa-ruler"></i> Length</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td style="color:var(--text-light);font-size:0.8rem;">#{{ log.id }}</td>
+                        <td style="font-size:0.85rem;color:var(--text-muted);">{{ log.date }}</td>
+                        <td style="font-weight:500;">{{ log.filename }}</td>
+                        <td>
+                            <span class="cat-chip badge-tech" style="font-size:0.75rem;">
+                                <i class="fa-solid fa-laptop-code"></i> {{ log.category }}
+                            </span>
+                        </td>
+                        <td style="color:var(--text-muted);font-size:0.85rem;">{{ log.extracted_text_length }} chars</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <i class="fa-solid fa-folder-open" style="font-size:2.5rem;color:var(--text-light);margin-bottom:1rem;display:block;"></i>
+                                <h3 style="margin-bottom:0.5rem;">No TECH logs yet</h3>
+                                <p style="font-size:0.9rem;">Upload a document classified as TECH to see it here.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
 
-        <!-- Footer -->
-        <footer class="app-footer">
-            <p>Built for Digital Seeder Technical Challenge</p>
-        </footer>
     </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<script>
+(function() {
+    const root = document.documentElement;
+    const saved = localStorage.getItem('ds-theme') || 'light';
+    root.setAttribute('data-theme', saved);
+    updateIcons(saved);
+
+    function updateIcons(t) {
+        document.querySelectorAll('#dark-icon,#dark-icon-sm').forEach(ic => {
+            ic.className = t === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        });
+        const lbl = document.getElementById('dark-label');
+        if (lbl) lbl.textContent = t === 'dark' ? 'Light Mode' : 'Dark Mode';
+    }
+    function toggle() {
+        const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        localStorage.setItem('ds-theme', next);
+        updateIcons(next);
+    }
+    document.getElementById('dark-mode-toggle')?.addEventListener('click', toggle);
+    document.getElementById('dark-mode-toggle-sm')?.addEventListener('click', toggle);
+
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    document.getElementById('menu-btn')?.addEventListener('click', () => {
+        sidebar.classList.add('open'); overlay.classList.add('visible');
+    });
+    document.getElementById('sidebar-close')?.addEventListener('click', () => {
+        sidebar.classList.remove('open'); overlay.classList.remove('visible');
+    });
+    overlay?.addEventListener('click', () => {
+        sidebar.classList.remove('open'); overlay.classList.remove('visible');
+    });
+})();
+</script>
 </body>
 </html>

@@ -1,25 +1,114 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document Classification AI</title>
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="description" content="Digital Seeder AI — Intelligent PDF document classification powered by machine learning">
+    <title>Digital Seeder AI — Document Classification</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Header -->
-        <header class="app-header">
-            <div class="logo-icon">
-                <i class="fa-solid fa-layer-group"></i>
+
+<!-- Animated Background Blobs -->
+<div class="bg-blobs" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+</div>
+
+<!-- App Layout -->
+<div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-mark">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="28" height="28" rx="8" fill="url(#grad)"/>
+                    <path d="M7 14L12 19L21 9" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs>
+                        <linearGradient id="grad" x1="0" y1="0" x2="28" y2="28">
+                            <stop offset="0%" stop-color="#6366F1"/>
+                            <stop offset="100%" stop-color="#8B5CF6"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span>Digital Seeder</span>
             </div>
-            <h1>Document Classification AI</h1>
-            <p>Upload a PDF document and trigger smart business automation</p>
+            <button class="sidebar-close" id="sidebar-close" aria-label="Close sidebar">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('main.index') }}" class="nav-item active" id="nav-classify">
+                <i class="fa-solid fa-brain"></i>
+                <span>Classify</span>
+            </a>
+            <a href="{{ url_for('main.tech_history') }}" class="nav-item" id="nav-history">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <span>Tech History</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-stats">
+            <p class="stats-title">Categories</p>
+            <ul class="stats-list">
+                <li><span class="stat-dot dot-business"></span>Business</li>
+                <li><span class="stat-dot dot-entertainment"></span>Entertainment</li>
+                <li><span class="stat-dot dot-sports"></span>Sports</li>
+                <li><span class="stat-dot dot-tech"></span>Tech</li>
+                <li><span class="stat-dot dot-politics"></span>Politics</li>
+                <li><span class="stat-dot dot-health"></span>Health</li>
+                <li><span class="stat-dot dot-other"></span>Other</li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <button class="dark-mode-toggle" id="dark-mode-toggle" aria-label="Toggle dark mode">
+                <i class="fa-solid fa-moon" id="dark-icon"></i>
+                <span id="dark-label">Dark Mode</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+        <!-- Top Bar -->
+        <header class="topbar">
+            <button class="menu-btn" id="menu-btn" aria-label="Open sidebar">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="topbar-brand">
+                <svg width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="28" height="28" rx="8" fill="url(#grad2)"/>
+                    <path d="M7 14L12 19L21 9" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs>
+                        <linearGradient id="grad2" x1="0" y1="0" x2="28" y2="28">
+                            <stop offset="0%" stop-color="#6366F1"/>
+                            <stop offset="100%" stop-color="#8B5CF6"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="topbar-title">Digital Seeder <span class="tag-ai">AI</span></span>
+            </div>
+            <button class="dark-mode-toggle-sm" id="dark-mode-toggle-sm" aria-label="Toggle dark mode">
+                <i class="fa-solid fa-moon" id="dark-icon-sm"></i>
+            </button>
         </header>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-badge">
+                <i class="fa-solid fa-sparkles"></i>
+                <span>AI-Powered Classification</span>
+            </div>
+            <h1 class="hero-title">Turn any PDF into<br><span class="gradient-text">intelligent action</span></h1>
+            <p class="hero-sub">Upload your document, our model classifies it instantly and triggers smart workflows.</p>
+        </section>
 
         <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -29,163 +118,235 @@
                         <div class="alert alert-{{ category }}">
                             <i class="fa-solid {% if category == 'success' %}fa-circle-check{% elif category == 'error' %}fa-circle-xmark{% else %}fa-circle-info{% endif %}"></i>
                             <span>{{ message }}</span>
+                            <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
                         </div>
                     {% endfor %}
                 </div>
             {% endif %}
         {% endwith %}
 
-        <!-- Main Content -->
-        <main class="app-main">
-            <!-- Upload Section -->
-            <section class="upload-section">
-                <form action="{{ url_for('main.index') }}" method="POST" enctype="multipart/form-data" class="upload-form" id="upload-form">
-                    <div class="drop-zone" id="drop-zone">
-                        <input type="file" id="file" name="file" accept=".pdf" class="file-input" required>
-                        <div class="drop-zone-content">
-                            <div class="icon-container">
-                                <i class="fa-solid fa-cloud-arrow-up"></i>
-                            </div>
-                            <h3>Drag & drop your PDF here</h3>
-                            <p>or click to browse from your computer</p>
-                            <span class="file-name" id="file-name">No file selected</span>
+        <!-- Upload Card -->
+        {% if not result %}
+        <section class="glass-card upload-card">
+            <form action="{{ url_for('main.index') }}" method="POST" enctype="multipart/form-data" id="upload-form">
+                <div class="drop-zone" id="drop-zone">
+                    <input type="file" id="file-input" name="file" accept=".pdf" class="file-input" required>
+                    <div class="drop-zone-inner" id="drop-zone-inner">
+                        <div class="upload-icon-wrap">
+                            <i class="fa-solid fa-file-arrow-up upload-icon"></i>
                         </div>
-                    </div>
-                    <button type="submit" class="btn-predict" id="btn-predict" disabled>
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> Predict Category
-                    </button>
-                </form>
-            </section>
-
-            <!-- Result Section -->
-            {% if result %}
-            <section class="result-section fade-in">
-                <div class="result-card">
-                    <div class="result-header">
-                        <h2>Analysis Result</h2>
-                        <span class="category-badge badge-{{ result.category|lower }}">
-                            <i class="fa-solid fa-tag"></i> {{ result.category }}
-                        </span>
-                    </div>
-                    
-                    <div class="result-body">
-                        <div class="info-group">
-                            <label><i class="fa-solid fa-file-pdf"></i> Filename</label>
-                            <p class="filename-text">{{ result.filename }}</p>
+                        <h3>Drag & drop your PDF</h3>
+                        <p>or <span class="browse-link">click to browse</span></p>
+                        <div class="file-chip" id="file-chip" style="display:none">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <span id="file-chip-name"></span>
+                            <button type="button" class="chip-remove" id="chip-remove"><i class="fa-solid fa-xmark"></i></button>
                         </div>
-
-                        <div class="info-group action-group">
-                            <label><i class="fa-solid fa-bolt"></i> Action Executed</label>
-                            <div class="action-box">
-                                {{ result.action if result.action is string else result.action.message }}
-                            </div>
-                        </div>
-
-                        <div class="info-group">
-                            <label><i class="fa-solid fa-align-left"></i> Extracted Text Preview</label>
-                            <div class="text-preview-box">
-                                {{ result.text_preview }}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="result-footer">
-                        <a href="{{ url_for('main.index') }}" class="btn-secondary">Analyze Another Document</a>
-                        {% if result.download_url %}
-                            <a href="{{ result.download_url }}" class="btn-secondary" style="background-color: var(--color-primary); color: white; border-color: var(--color-primary);"><i class="fa-solid fa-download"></i> Download File</a>
-                        {% endif %}
-                        <a href="{{ url_for('main.tech_history') }}" class="link-history">View Tech History <i class="fa-solid fa-arrow-right"></i></a>
                     </div>
                 </div>
-            </section>
-            {% else %}
-            <div class="history-link-container">
-                <a href="{{ url_for('main.tech_history') }}" class="link-history">View Tech History <i class="fa-solid fa-arrow-right"></i></a>
+                <button type="submit" class="btn-predict" id="btn-predict" disabled>
+                    <span class="btn-text"><i class="fa-solid fa-wand-magic-sparkles"></i> Analyze Document</span>
+                    <span class="btn-loader" style="display:none">
+                        <span class="dot-bounce"></span><span class="dot-bounce"></span><span class="dot-bounce"></span>
+                    </span>
+                </button>
+            </form>
+        </section>
+
+        <!-- Supported Categories -->
+        <div class="categories-row">
+            {% for cat, icon, cls in [
+                ('BUSINESS', 'fa-briefcase', 'business'),
+                ('ENTERTAINMENT', 'fa-film', 'entertainment'),
+                ('SPORTS', 'fa-trophy', 'sports'),
+                ('TECH', 'fa-laptop-code', 'tech'),
+                ('POLITICS', 'fa-landmark', 'politics'),
+                ('HEALTH', 'fa-heart-pulse', 'health'),
+                ('OTHER', 'fa-file-alt', 'other')
+            ] %}
+            <div class="cat-chip badge-{{ cls }}">
+                <i class="fa-solid {{ icon }}"></i> {{ cat }}
             </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+
+        <!-- Result Card -->
+        <section class="glass-card result-card fade-slide-up">
+            <div class="result-top">
+                <div class="result-top-left">
+                    <span class="result-label">Classification Result</span>
+                    <div class="result-cat-badge badge-{{ result.category|lower }}">
+                        {% if result.category == 'BUSINESS' %}
+                            <i class="fa-solid fa-briefcase"></i>
+                        {% elif result.category == 'ENTERTAINMENT' %}
+                            <i class="fa-solid fa-film"></i>
+                        {% elif result.category == 'SPORTS' %}
+                            <i class="fa-solid fa-trophy"></i>
+                        {% elif result.category == 'TECH' %}
+                            <i class="fa-solid fa-laptop-code"></i>
+                        {% elif result.category == 'POLITICS' %}
+                            <i class="fa-solid fa-landmark"></i>
+                        {% elif result.category == 'HEALTH' %}
+                            <i class="fa-solid fa-heart-pulse"></i>
+                        {% else %}
+                            <i class="fa-solid fa-file-alt"></i>
+                        {% endif %}
+                        {{ result.category }}
+                    </div>
+                </div>
+                <a href="{{ url_for('main.index') }}" class="btn-ghost">
+                    <i class="fa-solid fa-plus"></i> New Analysis
+                </a>
+            </div>
+
+            <div class="result-divider"></div>
+
+            <div class="result-grid">
+                <div class="result-info-block">
+                    <span class="info-label"><i class="fa-solid fa-file-pdf"></i> Document</span>
+                    <span class="info-value">{{ result.filename }}</span>
+                </div>
+                <div class="result-info-block">
+                    <span class="info-label"><i class="fa-solid fa-bolt"></i> Action Triggered</span>
+                    <span class="info-value action-val">
+                        {{ result.action if result.action is string else result.action.message }}
+                    </span>
+                </div>
+            </div>
+
+            {% if result.download_url %}
+            <a href="{{ result.download_url }}" class="btn-download">
+                <i class="fa-solid fa-download"></i> Download Generated File
+            </a>
             {% endif %}
-        </main>
 
-        <!-- Footer -->
-        <footer class="app-footer">
-            <p>Built for Digital Seeder Technical Challenge</p>
-        </footer>
+            <details class="text-preview-wrap">
+                <summary><i class="fa-solid fa-align-left"></i> Extracted Text Preview</summary>
+                <div class="text-preview-box">{{ result.text_preview }}</div>
+            </details>
+
+            <div class="result-footer-row">
+                <a href="{{ url_for('main.tech_history') }}" class="link-subtle">
+                    <i class="fa-solid fa-clock-rotate-left"></i> View Tech History
+                </a>
+            </div>
+        </section>
+        {% endif %}
+
     </div>
+</div>
 
-    <!-- Script for Drag & Drop and File Input -->
-    <script>
-        const fileInput = document.getElementById('file');
-        const fileNameDisplay = document.getElementById('file-name');
-        const dropZone = document.getElementById('drop-zone');
-        const btnPredict = document.getElementById('btn-predict');
-        const uploadForm = document.getElementById('upload-form');
+<!-- Sidebar overlay -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-        // Handle file selection via click
-        fileInput.addEventListener('change', function(e) {
-            handleFile(this.files[0]);
+<script>
+(function() {
+    // ─── Dark Mode ───────────────────────────────────────────────
+    const root = document.documentElement;
+    const savedTheme = localStorage.getItem('ds-theme') || 'light';
+    root.setAttribute('data-theme', savedTheme);
+    updateDarkIcons(savedTheme);
+
+    function updateDarkIcons(theme) {
+        const icons = document.querySelectorAll('#dark-icon, #dark-icon-sm');
+        const label = document.getElementById('dark-label');
+        icons.forEach(ic => {
+            ic.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
         });
+        if (label) label.textContent = theme === 'dark' ? 'Light Mode' : 'Dark Mode';
+    }
 
-        // Drag & Drop events
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, preventDefaults, false);
+    function toggleDark() {
+        const curr = root.getAttribute('data-theme');
+        const next = curr === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        localStorage.setItem('ds-theme', next);
+        updateDarkIcons(next);
+    }
+
+    document.getElementById('dark-mode-toggle')?.addEventListener('click', toggleDark);
+    document.getElementById('dark-mode-toggle-sm')?.addEventListener('click', toggleDark);
+
+    // ─── Sidebar ─────────────────────────────────────────────────
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const menuBtn = document.getElementById('menu-btn');
+    const closeBtn = document.getElementById('sidebar-close');
+
+    function openSidebar() {
+        sidebar.classList.add('open');
+        overlay.classList.add('visible');
+    }
+    function closeSidebar() {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('visible');
+    }
+
+    menuBtn?.addEventListener('click', openSidebar);
+    closeBtn?.addEventListener('click', closeSidebar);
+    overlay?.addEventListener('click', closeSidebar);
+
+    // ─── File Upload ─────────────────────────────────────────────
+    const fileInput = document.getElementById('file-input');
+    const dropZone = document.getElementById('drop-zone');
+    const fileChip = document.getElementById('file-chip');
+    const fileChipName = document.getElementById('file-chip-name');
+    const chipRemove = document.getElementById('chip-remove');
+    const btnPredict = document.getElementById('btn-predict');
+    const uploadForm = document.getElementById('upload-form');
+
+    if (!fileInput) return;
+
+    fileInput.addEventListener('change', () => handleFile(fileInput.files[0]));
+
+    ['dragenter','dragover'].forEach(evt => dropZone.addEventListener(evt, e => {
+        e.preventDefault(); dropZone.classList.add('dragging');
+    }));
+    ['dragleave','drop'].forEach(evt => dropZone.addEventListener(evt, e => {
+        e.preventDefault(); dropZone.classList.remove('dragging');
+    }));
+    dropZone.addEventListener('drop', e => {
+        const file = e.dataTransfer.files[0];
+        if (file && file.type === 'application/pdf') {
+            fileInput.files = e.dataTransfer.files;
+            handleFile(file);
+        }
+    });
+
+    function handleFile(file) {
+        if (!file) return;
+        fileChipName.textContent = file.name;
+        fileChip.style.display = 'flex';
+        btnPredict.disabled = false;
+        dropZone.classList.add('has-file');
+    }
+
+    chipRemove?.addEventListener('click', () => {
+        fileInput.value = '';
+        fileChip.style.display = 'none';
+        btnPredict.disabled = true;
+        dropZone.classList.remove('has-file');
+    });
+
+    // Loading state
+    uploadForm?.addEventListener('submit', () => {
+        const btnText = btnPredict.querySelector('.btn-text');
+        const btnLoader = btnPredict.querySelector('.btn-loader');
+        btnText.style.display = 'none';
+        btnLoader.style.display = 'flex';
+        btnPredict.disabled = true;
+    });
+
+    // Flash alert auto-close
+    setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(el => {
+            el.style.opacity = '0';
+            setTimeout(() => el.remove(), 400);
         });
-
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropZone.addEventListener(eventName, highlight, false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, unhighlight, false);
-        });
-
-        function highlight(e) {
-            dropZone.classList.add('drag-active');
-        }
-
-        function unhighlight(e) {
-            dropZone.classList.remove('drag-active');
-        }
-
-        dropZone.addEventListener('drop', handleDrop, false);
-
-        function handleDrop(e) {
-            let dt = e.dataTransfer;
-            let file = dt.files[0];
-            
-            if (file && file.type === "application/pdf") {
-                // Update input file
-                fileInput.files = dt.files;
-                handleFile(file);
-            } else {
-                alert("Please drop a PDF file.");
-            }
-        }
-
-        function handleFile(file) {
-            if (file) {
-                fileNameDisplay.textContent = file.name;
-                fileNameDisplay.classList.add('has-file');
-                btnPredict.disabled = false;
-                dropZone.classList.add('has-file-bg');
-            } else {
-                fileNameDisplay.textContent = 'No file selected';
-                fileNameDisplay.classList.remove('has-file');
-                btnPredict.disabled = true;
-                dropZone.classList.remove('has-file-bg');
-            }
-        }
-        
-        // Show loading state on form submit
-        uploadForm.addEventListener('submit', function() {
-            if (!btnPredict.disabled) {
-                btnPredict.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing...';
-                btnPredict.classList.add('loading');
-            }
-        });
-    </script>
+    }, 5000);
+})();
+</script>
 </body>
 </html>
