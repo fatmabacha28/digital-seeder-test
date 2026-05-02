@@ -105,7 +105,11 @@ def generate_sports_report(filepath, extracted_text, app):
     try:
         with open(report_filepath, 'w', encoding='utf-8') as f:
             f.write(content)
-        return f"Rapport sportif généré avec succès : {report_filename}"
+        return {
+            'type': 'download',
+            'filename': report_filename,
+            'message': f'Sports report generated: {report_filename}'
+        }
     except Exception as e:
         print(f"Erreur de génération du rapport sportif : {e}")
         return f"Erreur lors de la création du rapport sportif : {e}"
@@ -137,7 +141,11 @@ def generate_politics_summary(filepath, extracted_text, app):
     try:
         with open(report_filepath, 'w', encoding='utf-8') as f:
             f.write(content)
-        return f"Résumé politique généré avec succès : {report_filename}"
+        return {
+            'type': 'download',
+            'filename': report_filename,
+            'message': f'Politics summary generated: {report_filename}'
+        }
     except Exception as e:
         print(f"Erreur de génération du résumé politique : {e}")
         return f"Erreur lors de la création du résumé : {e}"
@@ -151,7 +159,11 @@ def generate_health_report(filepath, extracted_text, app):
     try:
         with open(report_filepath, 'w', encoding='utf-8') as f:
             f.write(content)
-        return f"Dossier santé généré : {report_filename}"
+        return {
+            'type': 'download',
+            'filename': report_filename,
+            'message': f'Health report generated: {report_filename}'
+        }
     except Exception as e:
         print(f"Erreur de génération dossier santé : {e}")
         return f"Erreur lors de la création du dossier santé : {e}"
