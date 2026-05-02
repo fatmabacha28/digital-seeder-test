@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Téléchargement des ressources NLTK
-RUN python -m nltk.downloader punkt stopwords
+RUN python -m nltk.downloader punkt stopwords wordnet
 
 # Copie du reste de l'application
 COPY . .

@@ -24,22 +24,27 @@ def process_action(category, filepath, extracted_text, app):
     else:
         return "Aucune action métier spécifique n'a été déclenchée pour cette catégorie."
 
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
+
 def send_email_via_mailhog(filepath, extracted_text, app):
     """Envoie un email via MailHog pour les documents BUSINESS."""
-    msg = EmailMessage()
+    msg = MIMEMultipart()
     msg['Subject'] = 'New Business Document'
     msg['From'] = app.config['MAIL_DEFAULT_SENDER']
     msg['To'] = 'business-team@example.com'
     
     # Corps de l'email
     content = f"Bonjour,\n\nVoici le contenu extrait du document métier reçu :\n\n---\n{extracted_text[:1000]}...\n---\n\nVeuillez trouver le document en pièce jointe."
-    msg.set_content(content)
+    msg.attach(MIMEText(content, 'plain'))
     
     # Pièce jointe
     try:
         with open(filepath, 'rb') as f:
-            pdf_data = f.read()
-            msg.add_attachment(pdf_data, maintype='application', subtype='pdf', filename=os.path.basename(filepath))
+            pdf_attachment = MIMEApplication(f.read(), _subtype="pdf")
+            pdf_attachment.add_header('Content-Disposition', 'attachment', filename=os.path.basename(filepath))
+            msg.attach(pdf_attachment)
     except Exception as e:
         print(f"Erreur lors de l'attachement du PDF : {e}")
 
