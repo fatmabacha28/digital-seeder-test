@@ -483,6 +483,56 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .badge-health { background: var(--bg-health); color: var(--c-health); }
 .badge-other { background: var(--bg-other); color: var(--c-other); }
 
+/* ─── Confidence Pill ───────── */
+.confidence-pill {
+    display: inline-block;
+    background: rgba(255,255,255,0.35);
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.1rem 0.5rem;
+    margin-left: 0.4rem;
+    vertical-align: middle;
+    backdrop-filter: blur(4px);
+}
+
+/* ─── Confidence Bar ────────── */
+.confidence-section { display: flex; flex-direction: column; gap: 0.5rem; }
+.conf-header { display: flex; justify-content: space-between; align-items: center; }
+.conf-value { font-size: 0.85rem; font-weight: 700; }
+.conf-high { color: #16A34A; }
+.conf-mid  { color: #D97706; }
+.conf-low  { color: #DC2626; }
+.conf-bar-track {
+    height: 8px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+}
+.conf-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+    opacity: 0.85;
+}
+
+/* ─── Keywords ──────────────── */
+.keywords-section { display: flex; flex-direction: column; gap: 0.5rem; }
+.keywords-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.kw-chip {
+    display: inline-flex; align-items: center;
+    background: rgba(99,102,241,0.08);
+    border: 1px solid rgba(99,102,241,0.2);
+    color: var(--primary);
+    font-size: 0.78rem; font-weight: 600;
+    padding: 0.25rem 0.65rem;
+    border-radius: 99px;
+    letter-spacing: 0.02em;
+    transition: all var(--transition);
+}
+.kw-chip:hover { background: rgba(99,102,241,0.15); transform: translateY(-1px); }
+
 /* ─── Tech History Table ─────────────────────── */
 .table-container {
     background: var(--surface);

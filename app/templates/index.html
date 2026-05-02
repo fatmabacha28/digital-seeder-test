@@ -194,6 +194,7 @@
                             <i class="fa-solid fa-file-alt"></i>
                         {% endif %}
                         {{ result.category }}
+                        <span class="confidence-pill">{{ result.confidence }}%</span>
                     </div>
                 </div>
                 <a href="{{ url_for('main.index') }}" class="btn-ghost">
@@ -215,6 +216,29 @@
                     </span>
                 </div>
             </div>
+
+            <!-- Confidence Bar -->
+            <div class="confidence-section">
+                <div class="conf-header">
+                    <span class="info-label"><i class="fa-solid fa-gauge-high"></i> Confidence Score</span>
+                    <span class="conf-value {% if result.confidence >= 75 %}conf-high{% elif result.confidence >= 55 %}conf-mid{% else %}conf-low{% endif %}">{{ result.confidence }}%</span>
+                </div>
+                <div class="conf-bar-track">
+                    <div class="conf-bar-fill badge-{{ result.category|lower }}" style="width: {{ result.confidence }}%"></div>
+                </div>
+            </div>
+
+            <!-- Key Signals -->
+            {% if result.keywords %}
+            <div class="keywords-section">
+                <span class="info-label"><i class="fa-solid fa-key"></i> Key Signals</span>
+                <div class="keywords-row">
+                    {% for kw in result.keywords %}
+                    <span class="kw-chip">{{ kw }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
 
             {% if result.download_url %}
             <a href="{{ result.download_url }}" class="btn-download">

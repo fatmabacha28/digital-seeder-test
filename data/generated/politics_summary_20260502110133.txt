@@ -1,0 +1,6 @@
+--- POLITICS DOCUMENT SUMMARY ---
+Processed on: 2026-05-02 11:01:33
+Original File: politics_sample.pdf
+
+Excerpt:
+politics news sample document document belongs politics category testing digital seeder classifier recent political developments highlight increased diplomatic discussions countries regarding economic cooperation governance reforms international stability key topics include government policy updates international relations elections democratic processes legislative reforms sample designed test nlp classification accuracy politics label

@@ -1,8 +1,8 @@
 import os
-import joblib
-
 import re
 import string
+import numpy as np
+import joblib
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
@@ -10,25 +10,29 @@ from nltk.stem import WordNetLemmatizer
 nltk.download('stopwords', quiet=True)
 nltk.download('wordnet', quiet=True)
 
+# ── Model cache ────────────────────────────────────────────────────────────────
+_cache = {}
+
 def load_models():
-    """Charge le modèle ML, le vectorizer et l'encodeur de labels."""
-    try:
-        model_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'models', 'model.joblib')
-        vectorizer_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'models', 'vectorizer.joblib')
-        le_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'models', 'label_encoder.joblib')
-        
-        if not all(os.path.exists(p) for p in [model_path, vectorizer_path, le_path]):
-            raise FileNotFoundError("Les fichiers du modèle sont introuvables. Lancez notebook/train_model.py d'abord.")
+    if _cache:
+        return _cache['model'], _cache['vectorizer'], _cache['le']
 
-        model = joblib.load(model_path)
-        vectorizer = joblib.load(vectorizer_path)
-        le = joblib.load(le_path)
-        return model, vectorizer, le
-    except Exception as e:
-        print(f"Erreur lors du chargement des modèles : {e}")
-        raise
+    base = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    paths = {
+        'model':      os.path.join(base, 'models', 'model.joblib'),
+        'vectorizer': os.path.join(base, 'models', 'vectorizer.joblib'),
+        'le':         os.path.join(base, 'models', 'label_encoder.joblib'),
+    }
+    for key, path in paths.items():
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"Missing: {path}. Run notebook/train_model.py first.")
+        _cache[key] = joblib.load(path)
 
-def preprocess_text_ml(text):
+    return _cache['model'], _cache['vectorizer'], _cache['le']
+
+
+# ── Text preprocessing (mirrors train_model.py) ────────────────────────────────
+def preprocess_text(text: str) -> str:
     if not isinstance(text, str):
         return ""
     text = text.lower()
@@ -37,38 +41,74 @@ def preprocess_text_ml(text):
     tokens = text.split()
     stop_words = set(stopwords.words('english'))
     lemmatizer = WordNetLemmatizer()
-    tokens = [lemmatizer.lemmatize(word) for word in tokens if word not in stop_words]
+    tokens = [lemmatizer.lemmatize(t) for t in tokens if t not in stop_words and len(t) > 2]
     return " ".join(tokens)
 
-def predict_category(cleaned_text):
-    """Prédit la catégorie d'un texte donné."""
-    if not cleaned_text:
-        return "OTHER"
+
+# ── Top keywords from TF-IDF ───────────────────────────────────────────────────
+def get_top_keywords(vectorizer, processed_text: str, top_n: int = 6) -> list:
+    try:
+        feature_names = vectorizer.get_feature_names_out()
+        vec = vectorizer.transform([processed_text])
+        scores = vec.toarray()[0]
+        top_indices = scores.argsort()[::-1][:top_n]
+        keywords = [feature_names[i] for i in top_indices if scores[i] > 0]
+        return keywords
+    except Exception:
+        return []
+
+
+# ── Main prediction function ───────────────────────────────────────────────────
+CONFIDENCE_THRESHOLD = 0.55
+
+def predict_category(raw_text: str) -> dict:
+    """
+    Returns a dict with:
+        category  : str
+        confidence: float (0-100)
+        keywords  : list[str]
+        all_scores: dict {label: pct}
+    """
+    if not raw_text or not raw_text.strip():
+        return {"category": "OTHER", "confidence": 0.0, "keywords": [], "all_scores": {}}
 
     model, vectorizer, le = load_models()
-    
-    # Preprocessing avancé comme pour l'entraînement
-    processed_text = preprocess_text_ml(cleaned_text)
-    if not processed_text:
-        processed_text = cleaned_text # Fallback
-    
-    # Vectorisation du texte
-    X_new = vectorizer.transform([processed_text])
-    
-    # Prédiction avec probabilité
+
+    processed = preprocess_text(raw_text)
+    if not processed:
+        processed = raw_text
+
+    X = vectorizer.transform([processed])
+
+    # Probabilities
     try:
-        import numpy as np
-        probas = model.predict_proba(X_new)
-        max_proba = np.max(probas, axis=1)[0]
-        raw_pred = np.argmax(probas, axis=1)
-        
-        if max_proba < 0.55:
-            prediction_label = "OTHER"
+        probas = model.predict_proba(X)[0]
+        max_proba = float(np.max(probas))
+        pred_idx  = int(np.argmax(probas))
+
+        if max_proba < CONFIDENCE_THRESHOLD:
+            category = "OTHER"
+            confidence = max_proba * 100
         else:
-            prediction_label = le.inverse_transform(raw_pred)[0]
+            category   = le.inverse_transform([pred_idx])[0]
+            confidence = max_proba * 100
+
+        all_scores = {
+            le.inverse_transform([i])[0]: round(float(p) * 100, 1)
+            for i, p in enumerate(probas)
+        }
     except AttributeError:
-        # Fallback
-        prediction_encoded = model.predict(X_new)
-        prediction_label = le.inverse_transform(prediction_encoded)[0]
-    
-    return prediction_label
+        # Fallback for models without predict_proba
+        pred = model.predict(X)
+        category   = le.inverse_transform(pred)[0]
+        confidence = 0.0
+        all_scores = {}
+
+    keywords = get_top_keywords(vectorizer, processed)
+
+    return {
+        "category":   category,
+        "confidence": round(confidence, 1),
+        "keywords":   keywords,
+        "all_scores": all_scores,
+    }
